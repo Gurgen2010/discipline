@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Планировщик дисциплины</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0b0b0a;
+    --panel: #121210;
+    --line: #262521;
+    --ink: #eae6dd;
+    --ink-dim: #8c887f;
+    --gold: #c9a24a;
+    --red: #d17a72;
+    --green: #7fbf8a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans', sans-serif;
+    padding: 28px 18px 60px;
+  }
+  .wrap{ max-width: 1180px; margin: 0 auto; }
+
+  .topbar{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px; margin-bottom: 22px;
+    flex-wrap: wrap; gap:12px;
+  }
+  .brand{ font-family:'Space Grotesk',sans-serif; font-size:15px; letter-spacing:0.04em; color:var(--ink-dim); }
+  .weekpick{ display:flex; align-items:center; gap:10px; }
+  .weekpick label{ font-size:12px; color:var(--ink-dim); }
+  .weekpick input[type=date]{
+    background:var(--panel); border:1px solid var(--line); color:var(--ink);
+    border-radius:6px; padding:6px 9px; font-family:'Noto Sans';
+  }
+
+  .overview{
+    display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom: 22px;
+  }
+  @media(max-width:760px){ .overview{ grid-template-columns:1fr; } }
+
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:18px 20px;
+  }
+  .card h2{
+    margin:0 0 14px; font-size:12px; font-weight:600; letter-spacing:0.06em;
+    color:var(--ink-dim); text-transform:none;
+  }
+
+  .goals-row{ display:flex; gap:18px; align-items:center; }
+  .goals-list{ flex:1; display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto; padding-right:4px; }
+  .goal-item{ display:flex; align-items:center; justify-content:space-between; gap:9px; font-size:13px; background:#17160f; padding:6px 10px; border-radius:8px; border:1px solid var(--line); }
+  .goal-left{ display:flex; align-items:center; gap:9px; flex:1; }
+  .goal-item input[type=checkbox]{ width:16px; height:16px; accent-color:var(--gold); }
+  .goal-item input:checked + span{ color:var(--ink-dim); text-decoration: line-through; text-decoration-color: var(--line); }
+  .del-btn{ background:transparent; border:none; color:var(--red); cursor:pointer; font-size:14px; padding:0 4px; }
+
+  .add-form{ display:flex; gap:6px; margin-top:12px; }
+  .add-form input{ flex:1; background:#17160f; border:1px solid var(--line); color:var(--ink); border-radius:6px; padding:6px 10px; font-family:'Noto Sans'; font-size:12px; }
+  .add-form button{ background:var(--gold); border:none; color:#141310; border-radius:6px; padding:6px 12px; font-size:12px; cursor:pointer; font-weight:600; }
+
+  .ring-block{ display:flex; flex-direction:column; align-items:center; gap:6px; min-width:96px; }
+  .ring-num{ font-family:'Space Grotesk'; font-size:13px; margin-top:2px; color:var(--ink-dim); }
+
+  .stat-strip{ display:flex; gap:14px; margin-top:16px; flex-wrap:wrap; }
+  .stat{ flex:1; min-width:70px; text-align:center; background:#17160f; border:1px solid var(--line); border-radius:10px; padding:9px 4px; }
+  .stat .n{ font-family:'Space Grotesk'; font-size:19px; font-weight:600; }
+  .stat .l{ font-size:10.5px; color:var(--ink-dim); margin-top:2px; }
+  .stat.best .n{ color:var(--green); }
+  .stat.worst .n{ color:var(--red); }
+
+  .progress-body{ display:flex; align-items:center; gap:18px; }
+  .bars{ flex:1; display:flex; align-items:flex-end; gap:8px; height:80px; }
+  .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
+  .bar{ width:100%; max-width:20px; background:#3b3a34; border-radius:3px 3px 0 0; transition: height .4s ease; }
+  .bar.filled{ background:var(--gold); }
+  .bar-lbl{ font-size:10px; color:var(--ink-dim); }
+
+  .week-grid{
+    display:grid; grid-template-columns: repeat(7,1fr); gap:12px;
+  }
+  @media(max-width:980px){ .week-grid{ grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); } }
+
+  .day-card{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 12px; display:flex; flex-direction:column; gap:10px; }
+  .day-head{ text-align:center; border-bottom:1px solid var(--line); padding-bottom:8px; }
+  .day-name{ font-size:12.5px; font-weight:600; }
+  .day-date{ font-size:10.5px; color:var(--ink-dim); margin-top:2px; }
+
+  .task-list{ display:flex; flex-direction:column; gap:7px; min-height:150px; max-height:220px; overflow-y:auto; }
+  .task{ display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:11px; background:#17160f; padding:4px 6px; border-radius:6px; border:1px solid var(--line); }
+  .task-left{ display:flex; align-items:flex-start; gap:6px; flex:1; }
+  .task input{ margin-top:2px; width:13px; height:13px; flex-shrink:0; accent-color:var(--gold); }
+  .task input:checked + span{ color:var(--ink-dim); text-decoration:line-through; text-decoration-color:var(--line); }
+
+  .day-counts{ display:flex; justify-content:space-between; font-size:10.5px; color:var(--ink-dim); border-top:1px solid var(--line); padding-top:7px; }
+  .day-counts b{ color:var(--ink); font-weight:600; }
+
+  .mini-tracker{ display:flex; flex-direction:column; gap:6px; }
+  .mini-row{ display:flex; align-items:center; justify-content:space-between; font-size:10.5px; color:var(--ink-dim); gap:6px; }
+  .dots{ display:flex; gap:3px; }
+  .dot{ width:12px; height:12px; border-radius:50%; border:1px solid var(--line); cursor:pointer; background:transparent; }
+  .dot.on{ background:var(--gold); border-color:var(--gold); }
+
+  .day-ring-wrap{ display:flex; flex-direction:column; align-items:center; gap:4px; padding-top:4px; }
+  .day-ring-lbl{ font-size:9.5px; color:var(--ink-dim); }
+
+  svg.ring text{ font-family:'Space Grotesk'; }
+
+  .day-note{
+    width:100%; resize:none; min-height:36px; background:#17160f; border:1px solid var(--line);
+    border-radius:8px; color:var(--ink); font-family:'Noto Sans'; font-size:11px;
+    padding:6px 8px; line-height:1.35;
+  }
+  .day-note:focus{ outline:1px solid var(--gold); }
+  
+  .quote-card{
+    text-align:center; border-color:var(--gold); background:linear-gradient(180deg,#1a1710,#121210);
+    position:relative; padding:22px 24px; margin-bottom:22px;
+  }
+  .quote-mark{ font-family:'Space Grotesk'; font-size:34px; color:var(--gold); line-height:0.4; display:block; margin-bottom:6px; }
+  .footnote{ text-align:center; color:var(--ink-dim); font-size:11px; margin-top:26px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">ПЛАНИРОВЩИК ДИСЦИПЛИНЫ · V2</div>
+    <div class="weekpick">
+      <label>Начало недели</label>
+      <input type="date" id="weekStart">
+    </div>
+  </div>
+
+  <div class="card quote-card">
+    <span class="quote-mark">"</span>
+    <div id="quoteText" style="font-size:17px; font-weight:600; color:var(--ink); letter-spacing:0.01em;"></div>
+    <button id="nextQuoteBtn" style="margin-top:12px; background:transparent; border:1px solid var(--line); color:var(--ink-dim); border-radius:20px; padding:5px 14px; font-size:11px; cursor:pointer; font-family:'Noto Sans';">Следующая цитата →</button>
+  </div>
+
+  <div class="overview">
+    <div class="card">
+      <h2>ЦЕЛИ НА НЕДЕЛЮ</h2>
+      <div class="goals-row">
+        <div class="goals-list" id="goalsList"></div>
+        <div class="ring-block">
+          <div id="goalsRingHolder"></div>
+          <div class="ring-num" id="goalsRingLabel">0%</div>
+        </div>
+      </div>
+      <div class="add-form">
+        <input type="text" id="newGoalInput" placeholder="Добавить новую цель...">
+        <button id="addGoalBtn">+ Добавить</button>
+      </div>
+      <div class="stat-strip" id="goalStatStrip" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>НЕДЕЛЬНЫЙ ПРОГРЕСС</h2>
+      <div class="progress-body">
+        <div class="bars" id="barsHolder"></div>
+        <div class="ring-block">
+          <div id="weekRingHolder"></div>
+          <div class="ring-num" id="weekRingLabel">0%</div>
+        </div>
+      </div>
+      <div class="stat-strip">
+        <div class="stat best"><div class="n" id="bestDayName">—</div><div class="l">Лучший день</div></div>
+        <div class="stat worst"><div class="n" id="worstDayName">—</div><div class="l">Слабый день</div></div>
+        <div class="stat"><div class="n" id="avgPct">0%</div><div class="l">Средний %</div></div>
+        <div class="stat"><div class="n" id="streakNum">0</div><div class="l">🔥 Серия (дн)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="week-grid" id="weekGrid"></div>
+
+  <div class="footnote">Данные автоматически сохраняются в вашем браузере</div>
+</div>
+
+<script>
+const DAY_NAMES = ["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"];
+const DAY_SHORT = ["ПН","ВТ","СР","ЧТ","ПТ","СБ","ВС"];
+
+let DEFAULT_TASKS = [
+  "Отжимания — 50 повторений",
+  "Пресс — 50 повторений",
+  "Холодный душ",
+  "Английский — 1 час",
+  "Чтение — 30 минут",
+  "Подъем в 06:00",
+  "Сон в 22:30",
+  "Водный баланс (5 стаканов)",
+  "Чистое питание",
+  "Работа / доп. доход — 1 час",
+  "Сбережения сегодня"
+];
+
+let DEFAULT_GOALS = [
+  "Отжимания: 50 в день (350 в неделю)",
+  "Пресс: 50 в день (350 в неделю)",
+  "Книга: 30 минут в день",
+  "Английский: 1 час в день",
+  "Режим сна 06:00 / 22:30",
+  "Работа / Доход: фокус ежедневно"
+];
+
+const QUOTES = [
+  "Дисциплина — это мост между вашими целями и достижениями.",
+  "Каждый день, когда вы держитесь, вы на шаг ближе к человеку, которым хотите стать.",
+  "Маленькие ежедневные шаги мощнее разовых грандиозных усилий.",
+  "Трудно не начать, трудно продолжать. Именно это отличает вас от остальных.",
+  "Не допускайте нулевых дней: делайте хотя бы маленький шаг ежедневно.",
+  "Ваше будущее создается привычками этой недели."
+];
+
+let state = {
+  weekStart: null,
+  goals: [],
+  tasksList: [],
+  quoteIndex: 0,
+  days: DAY_NAMES.map(()=>({ tasks: [], energy: 3, note: '' }))
+};
+
+const STORAGE_KEY = 'discipline-planner-ru-state';
+
+function mondayOf(d){
+  const day = d.getDay();
+  const diff = (day === 0 ? -6 : 1) - day;
+  const nd = new Date(d);
+  nd.setDate(nd.getDate()+diff);
+  return nd.toISOString().slice(0,10);
+}
+
+async function loadState(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved){
+      const parsed = JSON.parse(saved);
+      state = Object.assign(state, parsed);
+    }
+  }catch(e){}
+
+  if(!state.tasksList || state.tasksList.length === 0){
+    state.tasksList = [...DEFAULT_TASKS];
+  }
+  if(!state.goals || state.goals.length === 0){
+    state.goals = DEFAULT_GOALS.map(text => ({ text, done: false }));
+  }
+
+  if(!state.days || state.days.length !== 7){
+    state.days = DAY_NAMES.map(()=>({
+      tasks: Array(state.tasksList.length).fill(false),
+      energy: 3,
+      note: ''
+    }));
+  } else {
+    state.days.forEach(d => {
+      if(!Array.isArray(d.tasks)) d.tasks = [];
+      while(d.tasks.length < state.tasksList.length) d.tasks.push(false);
+      d.tasks.length = state.tasksList.length;
+    });
+  }
+
+  const currentMonday = mondayOf(new Date());
+  if(!state.weekStart){
+    state.weekStart = currentMonday;
+  } else if(state.weekStart < currentMonday){
+    state.weekStart = currentMonday;
+    state.goals.forEach(g => g.done = false);
+    state.days = DAY_NAMES.map(()=>({
+      tasks: Array(state.tasksList.length).fill(false),
+      energy: 3,
+      note: ''
+    }));
+    saveState();
+  }
+  document.getElementById('weekStart').value = state.weekStart;
+}
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){}
+}
+
+function ringSVG(pct, size, stroke, color){
+  const r = (size - stroke)/2;
+  const c = 2*Math.PI*r;
+  const off = c * (1 - pct/100);
+  return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#262521" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+      stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"
+      transform="rotate(-90 ${size/2} ${size/2})" style="transition: stroke-dashoffset .4s ease"/>
+    <text x="50%" y="53%" text-anchor="middle" fill="#eae6dd" font-size="${size*0.24}" font-weight="600">${Math.round(pct)}%</text>
+  </svg>`;
+}
+
+function dateForDayIndex(i){
+  if(!state.weekStart) return '';
+  const d = new Date(state.weekStart + 'T00:00:00');
+  d.setDate(d.getDate()+i);
+  return d.toLocaleDateString('ru-RU', {day:'2-digit', month:'short'});
+}
+
+function computeDayPct(dayIdx){
+  const arr = state.days[dayIdx].tasks;
+  const done = arr.filter(Boolean).length;
+  return { done, total: arr.length, pct: arr.length > 0 ? (done/arr.length)*100 : 0 };
+}
+
+function computeStreak(){
+  let streak = 0;
+  for(let i=0; i<state.days.length; i++){
+    const done = state.days[i].tasks.filter(Boolean).length;
+    if(done > 0) streak++;
+    else break;
+  }
+  return streak;
+}
+
+function computeGoalsPct(){
+  const done = state.goals.filter(g => g.done).length;
+  return { done, total: state.goals.length, pct: state.goals.length > 0 ? (done/state.goals.length)*100 : 0 };
+}
+
+function render(){
+  document.getElementById('quoteText').textContent = QUOTES[state.quoteIndex % QUOTES.length];
+
+  // Goals
+  const goalsList = document.getElementById('goalsList');
+  goalsList.innerHTML = state.goals.map((g,i)=>`
+    <div class="goal-item">
+      <div class="goal-left">
+        <input type="checkbox" data-goal="${i}" ${g.done ? 'checked':''}>
+        <span>${g.text}</span>
+      </div>
+      <button class="del-btn" data-del-goal="${i}" title="Удалить">✕</button>
+    </div>
+  `).join('');
+  
+  const gStat = computeGoalsPct();
+  document.getElementById('goalsRingHolder').innerHTML = ringSVG(gStat.pct, 84, 8, '#c9a24a');
+  document.getElementById('goalsRingLabel').textContent = `${gStat.done} / ${gStat.total}`;
+
+  let totalDone = 0, totalPossible = 0;
+  state.days.forEach(d => { totalDone += d.tasks.filter(Boolean).length; totalPossible += d.tasks.length; });
+  
+  document.getElementById('goalStatStrip').innerHTML = `
+    <div class="stat"><div class="n">${totalPossible}</div><div class="l">Всего задач</div></div>
+    <div class="stat best"><div class="n">${totalDone}</div><div class="l">Выполнено</div></div>
+    <div class="stat worst"><div class="n">${totalPossible-totalDone}</div><div class="l">Осталось</div></div>
+  `;
+
+  // Bars
+  const dayStats = state.days.map((d,i)=>computeDayPct(i));
+  const barsHolder = document.getElementById('barsHolder');
+  barsHolder.innerHTML = dayStats.map((s,i)=>{
+    const h = s.total > 0 ? Math.max(4, (s.done/s.total) * 76) : 4;
+    return `<div class="bar-col">
+      <div class="bar ${s.done>0?'filled':''}" style="height:${h}px"></div>
+      <div class="bar-lbl">${DAY_SHORT[i]}</div>
+    </div>`;
+  }).join('');
+
+  const weekPct = (totalPossible>0) ? (totalDone/totalPossible*100) : 0;
+  document.getElementById('weekRingHolder').innerHTML = ringSVG(weekPct, 84, 8, '#c9a24a');
+  document.getElementById('weekRingLabel').textContent = `${Math.round(weekPct)}%`;
+
+  let bestIdx = 0, worstIdx = 0;
+  dayStats.forEach((s,i)=>{
+    if(s.pct > dayStats[bestIdx].pct) bestIdx = i;
+    if(s.pct < dayStats[worstIdx].pct) worstIdx = i;
+  });
+  document.getElementById('bestDayName').textContent = totalDone>0 ? DAY_SHORT[bestIdx] : '—';
+  document.getElementById('worstDayName').textContent = totalDone>0 ? DAY_SHORT[worstIdx] : '—';
+  document.getElementById('avgPct').textContent = `${Math.round(weekPct)}%`;
+  document.getElementById('streakNum').textContent = computeStreak();
+
+  // Week Grid
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = DAY_NAMES.map((name,i)=>{
+    const stat = dayStats[i];
+    const tasksHtml = state.tasksList.map((t,ti)=>`
+      <div class="task">
+        <div class="task-left">
+          <input type="checkbox" data-day="${i}" data-task="${ti}" ${state.days[i].tasks[ti] ? 'checked':''}>
+          <span>${t}</span>
+        </div>
+        <button class="del-btn" data-del-task-template="${ti}" title="Удалить из всех дней">✕</button>
+      </div>
+    `).join('');
+    
+    const energyDots = [1,2,3,4,5].map(v=>`<div class="dot ${state.days[i].energy>=v?'on':''}" data-day="${i}" data-energy="${v}"></div>`).join('');
+    
+    return `
+      <div class="day-card">
+        <div class="day-head">
+          <div class="day-name">${name}</div>
+          <div class="day-date">${dateForDayIndex(i)}</div>
+        </div>
+        <div class="task-list">${tasksHtml}</div>
+        <div class="add-form" style="margin-top:4px;">
+          <input type="text" id="newTaskInput_${i}" placeholder="Новая задача..." style="font-size:10.5px; padding:4px 6px;">
+          <button data-add-task-day="${i}" style="font-size:10.5px; padding:4px 8px;">+</button>
+        </div>
+        <div class="day-counts"><span>Вып: <b>${stat.done}</b></span><span>Осталось: <b>${stat.total-stat.done}</b></span></div>
+        <textarea class="day-note" data-note="${i}" placeholder="Заметка за день...">${state.days[i].note || ''}</textarea>
+        <div class="mini-tracker">
+          <div class="mini-row"><span class="lbl">⚡ Энергия</span><div class="dots">${energyDots}</div></div>
+        </div>
+        <div class="day-ring-wrap">
+          ${ringSVG(stat.pct, 60, 6, stat.pct===100 ? '#7fbf8a' : '#c9a24a')}
+          <div class="day-ring-lbl">Прогресс дня</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  attachHandlers();
+}
+
+function attachHandlers(){
+  document.querySelectorAll('[data-goal]').forEach(el=>{
+    el.onchange = () => {
+      state.goals[+el.dataset.goal].done = el.checked;
+      saveState(); render();
+    };
+  });
+
+  document.querySelectorAll('[data-del-goal]').forEach(el=>{
+    el.onclick = () => {
+      state.goals.splice(+el.dataset.delGoal, 1);
+      saveState(); render();
+    };
+  });
+
+  document.querySelectorAll('[data-day][data-task]').forEach(el=>{
+    el.onchange = () => {
+      const d = +el.dataset.day, t = +el.dataset.task;
+      state.days[d].tasks[t] = el.checked;
+      saveState(); render();
+    };
+  });
+
+  document.querySelectorAll('[data-del-task-template]').forEach(el=>{
+    el.onclick = () => {
+      const idx = +el.dataset.delTaskTemplate;
+      state.tasksList.splice(idx, 1);
+      state.days.forEach(d => d.tasks.splice(idx, 1));
+      saveState(); render();
+    };
+  });
+
+  document.querySelectorAll('[data-add-task-day]').forEach(btn=>{
+    btn.onclick = () => {
+      const dayIdx = +btn.dataset.addTaskDay;
+      const input = document.getElementById(`newTaskInput_${dayIdx}`);
+      const val = input.value.trim();
+      if(val){
+        state.tasksList.push(val);
+        state.days.forEach((d, idx) => {
+          d.tasks.push(idx === dayIdx);
+        });
+        saveState(); render();
+      }
+    };
+  });
+
+  document.querySelectorAll('.dot[data-energy]').forEach(el=>{
+    el.onclick = () => {
+      const d = +el.dataset.day, v = +el.dataset.energy;
+      state.days[d].energy = (state.days[d].energy === v) ? v-1 : v;
+      saveState(); render();
+    };
+  });
+
+  document.querySelectorAll('.day-note').forEach(el=>{
+    el.onchange = () => {
+      state.days[+el.dataset.note].note = el.value;
+      saveState();
+    };
+  });
+
+  document.getElementById('nextQuoteBtn').onclick = () => {
+    state.quoteIndex++;
+    saveState(); render();
+  };
+
+  document.getElementById('addGoalBtn').onclick = () => {
+    const input = document.getElementById('newGoalInput');
+    const val = input.value.trim();
+    if(val){
+      state.goals.push({ text: val, done: false });
+      input.value = '';
+      saveState(); render();
+    }
+  };
+
+  document.getElementById('weekStart').onchange = (e) => {
+    state.weekStart = e.target.value;
+    saveState(); render();
+  };
+}
+
+(async function init(){
+  loadState();
+  render();
+})();
+</script>
+</body>
+</html>
