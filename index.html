@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="hy">
 <head>
 <meta charset="UTF-8">
-<title>Планировщик дисциплины</title>
+<title id="pageTitle">Կարգապահության պլանավորիչ</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg: #0b0b0a;
@@ -14,15 +14,13 @@
     --ink: #eae6dd;
     --ink-dim: #8c887f;
     --gold: #c9a24a;
-    --red: #d17a72;
-    --green: #7fbf8a;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     background: var(--bg);
     color: var(--ink);
-    font-family: 'Noto Sans', sans-serif;
+    font-family: 'Noto Sans Armenian', sans-serif;
     padding: 28px 18px 60px;
   }
   .wrap{ max-width: 1180px; margin: 0 auto; }
@@ -34,12 +32,20 @@
     flex-wrap: wrap; gap:12px;
   }
   .brand{ font-family:'Space Grotesk',sans-serif; font-size:15px; letter-spacing:0.04em; color:var(--ink-dim); }
+  .topbar-right{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
   .weekpick{ display:flex; align-items:center; gap:10px; }
   .weekpick label{ font-size:12px; color:var(--ink-dim); }
   .weekpick input[type=date]{
     background:var(--panel); border:1px solid var(--line); color:var(--ink);
-    border-radius:6px; padding:6px 9px; font-family:'Noto Sans';
+    border-radius:6px; padding:6px 9px; font-family:'Noto Sans Armenian';
   }
+
+  .lang-switch{ display:flex; gap:4px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:3px; }
+  .lang-btn{
+    background:transparent; border:none; color:var(--ink-dim); font-family:'Space Grotesk',sans-serif;
+    font-size:11px; font-weight:600; letter-spacing:0.03em; padding:5px 10px; border-radius:5px; cursor:pointer;
+  }
+  .lang-btn.active{ background:var(--gold); color:#141310; }
 
   .overview{
     display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom: 22px;
@@ -56,16 +62,10 @@
   }
 
   .goals-row{ display:flex; gap:18px; align-items:center; }
-  .goals-list{ flex:1; display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto; padding-right:4px; }
-  .goal-item{ display:flex; align-items:center; justify-content:space-between; gap:9px; font-size:13px; background:#17160f; padding:6px 10px; border-radius:8px; border:1px solid var(--line); }
-  .goal-left{ display:flex; align-items:center; gap:9px; flex:1; }
-  .goal-item input[type=checkbox]{ width:16px; height:16px; accent-color:var(--gold); }
+  .goals-list{ flex:1; display:flex; flex-direction:column; gap:8px; }
+  .goal-item{ display:flex; align-items:center; gap:9px; font-size:13.5px; }
+  .goal-item input{ width:16px; height:16px; accent-color:#c9a24a; }
   .goal-item input:checked + span{ color:var(--ink-dim); text-decoration: line-through; text-decoration-color: var(--line); }
-  .del-btn{ background:transparent; border:none; color:var(--red); cursor:pointer; font-size:14px; padding:0 4px; }
-
-  .add-form{ display:flex; gap:6px; margin-top:12px; }
-  .add-form input{ flex:1; background:#17160f; border:1px solid var(--line); color:var(--ink); border-radius:6px; padding:6px 10px; font-family:'Noto Sans'; font-size:12px; }
-  .add-form button{ background:var(--gold); border:none; color:#141310; border-radius:6px; padding:6px 12px; font-size:12px; cursor:pointer; font-weight:600; }
 
   .ring-block{ display:flex; flex-direction:column; align-items:center; gap:6px; min-width:96px; }
   .ring-num{ font-family:'Space Grotesk'; font-size:13px; margin-top:2px; color:var(--ink-dim); }
@@ -74,14 +74,14 @@
   .stat{ flex:1; min-width:70px; text-align:center; background:#17160f; border:1px solid var(--line); border-radius:10px; padding:9px 4px; }
   .stat .n{ font-family:'Space Grotesk'; font-size:19px; font-weight:600; }
   .stat .l{ font-size:10.5px; color:var(--ink-dim); margin-top:2px; }
-  .stat.best .n{ color:var(--green); }
-  .stat.worst .n{ color:var(--red); }
+  .stat.best .n{ color:#7fbf8a; }
+  .stat.worst .n{ color:#d17a72; }
 
   .progress-body{ display:flex; align-items:center; gap:18px; }
   .bars{ flex:1; display:flex; align-items:flex-end; gap:8px; height:80px; }
   .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
   .bar{ width:100%; max-width:20px; background:#3b3a34; border-radius:3px 3px 0 0; transition: height .4s ease; }
-  .bar.filled{ background:var(--gold); }
+  .bar.filled{ background:#c9a24a; }
   .bar-lbl{ font-size:10px; color:var(--ink-dim); }
 
   .week-grid{
@@ -94,10 +94,10 @@
   .day-name{ font-size:12.5px; font-weight:600; }
   .day-date{ font-size:10.5px; color:var(--ink-dim); margin-top:2px; }
 
-  .task-list{ display:flex; flex-direction:column; gap:7px; min-height:150px; max-height:220px; overflow-y:auto; }
-  .task{ display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:11px; background:#17160f; padding:4px 6px; border-radius:6px; border:1px solid var(--line); }
-  .task-left{ display:flex; align-items:flex-start; gap:6px; flex:1; }
-  .task input{ margin-top:2px; width:13px; height:13px; flex-shrink:0; accent-color:var(--gold); }
+  .task-list{ display:flex; flex-direction:column; gap:7px; min-height:150px; }
+  .task{ display:flex; align-items:flex-start; gap:7px; font-size:11.6px; line-height:1.3; }
+  .task input{ margin-top:2px; width:14px; height:14px; flex-shrink:0; accent-color:#c9a24a; }
+  .task span{ transition: color .2s; }
   .task input:checked + span{ color:var(--ink-dim); text-decoration:line-through; text-decoration-color:var(--line); }
 
   .day-counts{ display:flex; justify-content:space-between; font-size:10.5px; color:var(--ink-dim); border-top:1px solid var(--line); padding-top:7px; }
@@ -105,9 +105,10 @@
 
   .mini-tracker{ display:flex; flex-direction:column; gap:6px; }
   .mini-row{ display:flex; align-items:center; justify-content:space-between; font-size:10.5px; color:var(--ink-dim); gap:6px; }
+  .mini-row .lbl{ white-space:nowrap; }
   .dots{ display:flex; gap:3px; }
   .dot{ width:12px; height:12px; border-radius:50%; border:1px solid var(--line); cursor:pointer; background:transparent; }
-  .dot.on{ background:var(--gold); border-color:var(--gold); }
+  .dot.on{ background:#c9a24a; border-color:#c9a24a; }
 
   .day-ring-wrap{ display:flex; flex-direction:column; align-items:center; gap:4px; padding-top:4px; }
   .day-ring-lbl{ font-size:9.5px; color:var(--ink-dim); }
@@ -115,17 +116,17 @@
   svg.ring text{ font-family:'Space Grotesk'; }
 
   .day-note{
-    width:100%; resize:none; min-height:36px; background:#17160f; border:1px solid var(--line);
-    border-radius:8px; color:var(--ink); font-family:'Noto Sans'; font-size:11px;
+    width:100%; resize:none; min-height:40px; background:#17160f; border:1px solid var(--line);
+    border-radius:8px; color:var(--ink); font-family:'Noto Sans Armenian'; font-size:11px;
     padding:6px 8px; line-height:1.35;
   }
   .day-note:focus{ outline:1px solid var(--gold); }
-  
   .quote-card{
     text-align:center; border-color:var(--gold); background:linear-gradient(180deg,#1a1710,#121210);
-    position:relative; padding:22px 24px; margin-bottom:22px;
+    position:relative; padding:22px 24px;
   }
   .quote-mark{ font-family:'Space Grotesk'; font-size:34px; color:var(--gold); line-height:0.4; display:block; margin-bottom:6px; }
+
   .footnote{ text-align:center; color:var(--ink-dim); font-size:11px; margin-top:26px; }
 </style>
 </head>
@@ -133,22 +134,37 @@
 <div class="wrap">
 
   <div class="topbar">
-    <div class="brand">ПЛАНИРОВЩИК ДИСЦИПЛИНЫ · V2</div>
-    <div class="weekpick">
-      <label>Начало недели</label>
-      <input type="date" id="weekStart">
+    <div class="brand" id="brandText">ԿԱՐԳԱՊԱՀՈՒԹՅԱՆ ՊԼԱՆԱՎՈՐԻՉ · V2</div>
+    <div class="topbar-right">
+      <div class="lang-switch" id="langSwitch">
+        <button class="lang-btn" data-lang="hy">ՀԱՅ</button>
+        <button class="lang-btn" data-lang="ru">РУ</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <div class="weekpick">
+        <label id="weekStartLabel">Շաբաթվա սկիզբ</label>
+        <input type="date" id="weekStart">
+      </div>
     </div>
   </div>
 
-  <div class="card quote-card">
+  <div class="card quote-card" style="margin-bottom:22px;">
     <span class="quote-mark">"</span>
     <div id="quoteText" style="font-size:17px; font-weight:600; color:var(--ink); letter-spacing:0.01em;"></div>
-    <button id="nextQuoteBtn" style="margin-top:12px; background:transparent; border:1px solid var(--line); color:var(--ink-dim); border-radius:20px; padding:5px 14px; font-size:11px; cursor:pointer; font-family:'Noto Sans';">Следующая цитата →</button>
+    <button id="nextQuoteBtn" style="margin-top:12px; background:transparent; border:1px solid var(--line); color:var(--ink-dim); border-radius:20px; padding:5px 14px; font-size:11px; cursor:pointer; font-family:'Noto Sans Armenian';"></button>
+    <details style="margin-top:14px; text-align:left;">
+      <summary id="manageQuotesSummary" style="cursor:pointer; font-size:11px; color:var(--ink-dim); text-align:center;"></summary>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <input id="newQuoteInput" type="text" style="flex:1; background:#17160f; border:1px solid var(--line); color:var(--ink); border-radius:6px; padding:7px 10px; font-family:'Noto Sans Armenian'; font-size:12px;">
+        <button id="addQuoteBtn" style="background:var(--gold); border:none; color:#141310; border-radius:6px; padding:7px 14px; font-size:12px; cursor:pointer; font-family:'Noto Sans Armenian'; font-weight:600;"></button>
+      </div>
+      <div id="myQuotesList" style="display:flex; flex-direction:column; gap:6px; margin-top:10px; max-height:160px; overflow-y:auto;"></div>
+    </details>
   </div>
 
   <div class="overview">
     <div class="card">
-      <h2>ЦЕЛИ НА НЕДЕЛЮ</h2>
+      <h2 id="goalsHeader">ՆՊԱՏԱԿՆԵՐ ՇԱԲԱԹՎԱ ՀԱՄԱՐ</h2>
       <div class="goals-row">
         <div class="goals-list" id="goalsList"></div>
         <div class="ring-block">
@@ -156,15 +172,11 @@
           <div class="ring-num" id="goalsRingLabel">0%</div>
         </div>
       </div>
-      <div class="add-form">
-        <input type="text" id="newGoalInput" placeholder="Добавить новую цель...">
-        <button id="addGoalBtn">+ Добавить</button>
-      </div>
-      <div class="stat-strip" id="goalStatStrip" style="margin-top:12px;"></div>
+      <div class="stat-strip" id="goalStatStrip"></div>
     </div>
 
     <div class="card">
-      <h2>НЕДЕЛЬНЫЙ ПРОГРЕСС</h2>
+      <h2 id="weeklyProgressHeader">ՇԱԲԱԹԱԿԱՆ ԱՌԱՋԸՆԹԱՑ</h2>
       <div class="progress-body">
         <div class="bars" id="barsHolder"></div>
         <div class="ring-block">
@@ -173,64 +185,441 @@
         </div>
       </div>
       <div class="stat-strip">
-        <div class="stat best"><div class="n" id="bestDayName">—</div><div class="l">Лучший день</div></div>
-        <div class="stat worst"><div class="n" id="worstDayName">—</div><div class="l">Слабый день</div></div>
-        <div class="stat"><div class="n" id="avgPct">0%</div><div class="l">Средний %</div></div>
-        <div class="stat"><div class="n" id="streakNum">0</div><div class="l">🔥 Серия (дн)</div></div>
+        <div class="stat best"><div class="n" id="bestDayName">—</div><div class="l" id="bestDayLabel"></div></div>
+        <div class="stat worst"><div class="n" id="worstDayName">—</div><div class="l" id="worstDayLabel"></div></div>
+        <div class="stat"><div class="n" id="avgPct">0%</div><div class="l" id="avgLabel"></div></div>
+        <div class="stat"><div class="n" id="streakNum">0</div><div class="l" id="streakLabel"></div></div>
+        <div class="stat"><div class="n" id="bestStreakNum">0</div><div class="l" id="bestStreakLabel"></div></div>
       </div>
     </div>
   </div>
 
   <div class="week-grid" id="weekGrid"></div>
 
-  <div class="footnote">Данные автоматически сохраняются в вашем браузере</div>
+  <div class="overview" style="margin-top:16px;">
+    <div class="card" id="historyCard" style="display:none;">
+      <h2 id="historyHeader">ՆԱԽՈՐԴ ՇԱԲԱԹՆԵՐ</h2>
+      <div class="bars" id="historyBars" style="height:60px;"></div>
+    </div>
+    <div class="card">
+      <h2 id="reflectionHeader">ՇԱԲԱԹՎԱ ԱՄՓՈՓՈՒՄ</h2>
+      <textarea class="day-note" id="weeklyReflection" style="min-height:60px;"></textarea>
+    </div>
+  </div>
+
+  <div class="footnote" id="footnoteText">Տվյալները պահվում են ավտոմատ քո զննարկիչում այս սարքի համար</div>
 </div>
 
 <script>
-const DAY_NAMES = ["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"];
-const DAY_SHORT = ["ПН","ВТ","СР","ЧТ","ПТ","СБ","ВС"];
+const DAY_NAMES = {
+  hy: ["Երկուշաբթի","Երեքշաբթի","Չորեքշաբթի","Հինգշաբթի","Ուրբաթ","Շաբաթ","Կիրակի"],
+  ru: ["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"],
+  en: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+};
+const DAY_SHORT = {
+  hy: ["ԵՐԿ","ԵՐք","ՉՈՐ","ՀՆԳ","ՈՒՐԲ","ՇԲԹ","ԿԻՐ"],
+  ru: ["ПН","ВТ","СР","ЧТ","ПТ","СБ","ВС"],
+  en: ["MON","TUE","WED","THU","FRI","SAT","SUN"]
+};
+const LOCALE = { hy: 'hy-AM', ru: 'ru-RU', en: 'en-US' };
 
-let DEFAULT_TASKS = [
-  "Отжимания — 50 повторений",
-  "Пресс — 50 повторений",
-  "Холодный душ",
-  "Английский — 1 час",
-  "Чтение — 30 минут",
-  "Подъем в 06:00",
-  "Сон в 22:30",
-  "Водный баланс (5 стаканов)",
-  "Чистое питание",
-  "Работа / доп. доход — 1 час",
-  "Сбережения сегодня"
-];
+const TASKS = {
+  hy: [
+    "Հրումներ — 50 կրկնություն",
+    "Որովայնամկաններ — 50 կրկնություն",
+    "Սառը լոգանք",
+    "Անգլերեն — 1 ժամ",
+    "Ընթերցում — 30 րոպե",
+    "Արթնանալ 06:00-ին",
+    "Քնել 22:30-ին",
+    "Ջրի հաշվեկշիռ (5 բաժակ)",
+    "Մաքուր սնունդ",
+    "Աշխատանք / կողմնակի եկամուտ — 1 ժամ",
+    "Խնայողություն այսօր (գոնե մի քիչ)"
+  ],
+  ru: [
+    "Отжимания — 50 повторений",
+    "Пресс — 50 повторений",
+    "Холодный душ",
+    "Английский — 1 час",
+    "Чтение — 30 минут",
+    "Подъём в 06:00",
+    "Сон в 22:30",
+    "Водный баланс (5 стаканов)",
+    "Чистое питание",
+    "Работа / доп. доход — 1 час",
+    "Накопления сегодня (хотя бы немного)"
+  ],
+  en: [
+    "Push-ups — 50 reps",
+    "Abs — 50 reps",
+    "Cold shower",
+    "English — 1 hour",
+    "Reading — 30 min",
+    "Wake up at 06:00",
+    "Sleep at 22:30",
+    "Water intake (5 glasses)",
+    "Clean eating",
+    "Work / side income — 1 hour",
+    "Save something today (even a little)"
+  ]
+};
 
-let DEFAULT_GOALS = [
-  "Отжимания: 50 в день (350 в неделю)",
-  "Пресс: 50 в день (350 в неделю)",
-  "Книга: 30 минут в день",
-  "Английский: 1 час в день",
-  "Режим сна 06:00 / 22:30",
-  "Работа / Доход: фокус ежедневно"
-];
+const GOALS = {
+  hy: [
+    "Հրումներ. օրական 50 (350 շաբաթում)",
+    "Որովայնամկաններ. օրական 50 (350 շաբաթում)",
+    "Գիրք. օրական 30 րոպե",
+    "Անգլերեն. օրական 1 ժամ",
+    "Քնի ռեժիմ 06:00 / 22:30",
+    "Աշխատանք/եկամուտ. հետևողական ջանք ամեն օր"
+  ],
+  ru: [
+    "Отжимания: 50 в день (350 за неделю)",
+    "Пресс: 50 в день (350 за неделю)",
+    "Книга: 30 минут в день",
+    "Английский: 1 час в день",
+    "Режим сна 06:00 / 22:30",
+    "Работа/доход: постоянные усилия каждый день"
+  ],
+  en: [
+    "Push-ups: 50/day (350/week)",
+    "Abs: 50/day (350/week)",
+    "Book: 30 min/day",
+    "English: 1 hour/day",
+    "Sleep schedule 06:00 / 22:30",
+    "Work/income: consistent effort every day"
+  ]
+};
 
-const QUOTES = [
-  "Дисциплина — это мост между вашими целями и достижениями.",
-  "Каждый день, когда вы держитесь, вы на шаг ближе к человеку, которым хотите стать.",
-  "Маленькие ежедневные шаги мощнее разовых грандиозных усилий.",
-  "Трудно не начать, трудно продолжать. Именно это отличает вас от остальных.",
-  "Не допускайте нулевых дней: делайте хотя бы маленький шаг ежедневно.",
-  "Ваше будущее создается привычками этой недели."
-];
+const QUOTES = {
+  hy: [
+    "Կարգապահությունը կամրջում է նպատակի և հաջողության միջև եղած տարածությունը։",
+    "Յուրաքանչյուր օր, որ դու տոկում ես, մեկ քայլ ես մոտենում այն մարդուն, ում ուզում ես դառնալ։",
+    "Փոքր, կայուն քայլերը ամեն օր ավելի հզոր են, քան մեկանգամյա մեծ ճիգը։",
+    "Դժվար չէ սկսել՝ դժվարը շարունակելն է։ Հենց դա էլ քեզ առանձնացնում է։",
+    "Զրո օր մի ունեցիր. գոնե մեկ փոքր քայլ, ամեն օր։",
+    "Քո ապագան կառուցվում է հենց այս շաբաթվա սովորություններով։",
+    "Հարուստ մարդիկ գնում են բան, որ իրենց եկամուտ է բերում. մնացածները՝ բան, որ միայն ծախս է առաջացնում։",
+    "Ամեն եկամուտից նախ մի մաս թող մնա քեզ մոտ, հետո միայն ծախսիր մնացածը։",
+    "Փողի հետ հաջողությունը մեծ մասամբ կախված է սովորություններից ու վարքից, ոչ միայն գիտելիքից։",
+    "Այն, ինչին հաստատակամորեն հավատում ու հետապնդում ես, ժամանակի հետ դառնում է հասանելի։",
+    "Հասկացիր՝ ինչպես է իրականում աշխատում փողն ու տնտեսությունը, և կդադարես կույր կերպով դրանից կախված լինել։",
+    "Ծուլի ձեռքը աղքատացնում է, բայց ջանասեր ձեռքը հարստացնում է։",
+    "Ինչ քիչ ունես, եթե լավ կառավարես, քեզ ավելի մեծ բան կվստահվի։",
+    "Յուրաքանչյուր փոքր խնայողություն այսօր, ժամանակի հետ դառնում է մեծ ազատություն։",
+    "Հաջողությունը հաճախ գնում է նրանց մոտ, ովքեր աշխատում են այն պահին, երբ մյուսները հանգստանում են։",
+    "Ժամանակը քո ամենաթանկ ռեսուրսն է. ծախսիր այն այնպես, ինչպես կծախսեիր փողդ։",
+    "Սովորությունը, որին հավատարիմ ես մնում ամեն օր, ավելի կարևոր է, քան մեկանգամյա մեծ որոշումը։",
+    "Հարմարավետությունը հաճախ աճի ամենամեծ թշնամին է։",
+    "Ով սովորում է կառավարել իր ցանկությունները, նա սովորում է կառավարել իր ապագան։",
+    "Փող աշխատելը հմտություն է, և ինչպես ցանկացած հմտություն, այն զարգանում է կրկնությամբ։",
+    "Ամեն մեծ նպատակ սկսվում է որպես փոքր, աննկատ սովորություն։",
+    "Մի սպասիր ոգեշնչման՝ սկսիր գործից, ոգեշնչումը կգա հետո։",
+    "Կարգապահ մարդը չի հարցնում՝ «ուզում եմ՞ այսօր», այլ պարզապես անում է։",
+    "Ամեն ներդրում սկզբում փոքր է թվում. մեծանում է միայն ժամանակի հետ։",
+    "Աշխատանքից խուսափելը ժամանակավոր հանգստություն է, որին հաջորդում է ավելի մեծ ճնշում։",
+    "Ուրիշների հաջողությունը նախանձելու փոխարեն սովորիր, թե ինչ են նրանք արել տարբեր կերպ։",
+    "Այն, ինչ չես չափում, չես կարող բարելավել. հետևիր քո առաջընթացին։",
+    "Յուրաքանչյուր հմտություն, որ սովորում ես երիտասարդ տարիքում, տարիներ շարունակ քեզ եկամուտ կբերի։",
+    "Ֆինանսական ազատությունը սկսվում է ոչ թե մեծ աշխատավարձից, այլ ծախսերը եկամուտից պակաս պահելուց։",
+    "Մի աշխատիր միայն փողի համար. աշխատիր հմտություն ու համբավ կառուցելու համար, փողը կգա հետևից։",
+    "Յուրաքանչյուր անգամ, երբ ընտրում ես կարգապահությունը հեշտության փոխարեն, ամրապնդում ես քո բնավորությունը։",
+    "Հաջողակ մարդիկ անում են այն, ինչ անհաջողները խուսափում են անել, նույնիսկ երբ դժվար է։",
+    "Ամենամեծ ռիսկը երբեմն ոչինչ չանելն է։",
+    "Աշխատիր այնպես, կարծես ոչ ոք քեզ չի դիտում, և հաջողությունը ինքնին կերևա։",
+    "Գումարը գործիք է, ոչ նպատակ. հարցրու քեզ՝ ինչի՞ համար ես այն ուզում։",
+    "Կայունությունը ավելի կարևոր է, քան ինտենսիվությունը. դանդաղ ու հաստատուն հաղթում է արագ ու անկայունին։",
+    "Ով սովորում է խնայել քիչից, կսովորի կառավարել շատը, երբ այն գա։",
+    "Ամեն օր, որ չես սովորում ինչ-որ նոր բան, մեկ օրով ուշանում ես քո ապագայից։",
+    "Մեծ երազանքները իրականանում են փոքր, կրկնվող գործողություններով, ոչ թե մեկանգամյա հրաշքով։",
+    "Եթե չես գնահատում փոքր գումարը, չես կարողանա կառավարել մեծը։",
+    "Ինքնակարգապահությունն ազատություն է, ոչ սահմանափակում. այն քեզ ազատում է հետագա փոշմանանքից։",
+    "Ամեն մարտահրավեր, որին դիմանում ես, քեզ ավելի ամուր է դարձնում հաջորդի համար։",
+    "Ժամանակի կառավարումը իրականում ինքնակարգապահության կառավարումն է։",
+    "Փող աշխատելուց առաջ սովորիր փող գնահատել։",
+    "Հաջողությունը եզակի իրադարձություն չէ, այլ ամենօրյա ընտրությունների գումար։",
+    "Ով վաղ արթնանում ու աշխատում է, ստանում է ժամանակի ամենամեծ նվերը՝ առավելություն։",
+    "Յուրաքանչյուր հմտություն, որին տիրապետում ես, բարձրացնում է քո արժեքը շուկայում։",
+    "Ամենամեծ ներդրումը, որ կարող ես անել, քեզ մեջ է՝ գիտելիք, առողջություն և կարգապահություն։",
+    "Անհաջողությունը ոչ թե վերջ է, այլ դասագիրք, որը սովորեցնում է հաջորդ քայլը։",
+    "Հարուստ մտածելակերպը սկսվում է հարցից՝ «ինչպե՞ս կարող եմ», ոչ թե «ինչու չեմ կարող»։",
+    "Ով վերահսկում է իր ցանկությունները, վերահսկում է իր ֆինանսները։",
+    "Աշխատանքային էթիկան ամենահուսալի «գաղտնի բանաձևն» է հաջողության համար։",
+    "Յուրաքանչյուր օր, որ ընտրում ես կարգապահությունը, քվեարկում ես այն մարդու օգտին, ում ուզում ես դառնալ։",
+    "Գումար կուտակելը սկսվում է ոչ թե մեծ եկամուտից, այլ փոքր, կայուն սովորությունից։",
+    "Ինչքան շուտ սկսես ներդնել քո ժամանակն ու էներգիան, այնքան մեծ կլինի արդյունքը երկար ժամանակահատվածում։",
+    "Համբերությունը ֆինանսական հաջողության ամենաթերագնահատված հմտությունն է։",
+    "Ով սովորում է ապրել իր միջոցներից ցածր, նա ազատագրում է իրեն ապագայի համար։",
+    "Աշխատիր խելացի, բայց մի խուսափիր նաև աշխատել շատ, հատկապես սկզբում։",
+    "Ամեն մեծ գործարար նախկինում եղել է սկսնակ, ով պարզապես չի հրաժարվել։",
+    "Ֆինանսական գրագիտությունը ազատության հիմքն է, ոչ պարտադրանք։",
+    "Ով խնայում է առանց նպատակի, հեշտությամբ ծախսում է. սահմանիր՝ ինչի համար ես խնայում։",
+    "Ամեն օր տրված ընտրությունը՝ հեշտի կամ ճիշտի միջև, ձևավորում է քո ապագան։",
+    "Հաջողությունը սիրում է նրանց, ովքեր հետևողական են նաև այն օրերին, երբ դրդապատճառ չկա։",
+    "Ով ներդնում է իր ժամանակը սովորելու մեջ, երբեք չի կորցնում, նույնիսկ եթե սխալվում է։",
+    "Աշխատանքը, որը սկզբում ձանձրալի է թվում, հաճախ դառնում է ամենաարժեքավոր հմտությունը։",
+    "Հարստությունը կառուցվում է լուռ, առանց ցուցադրության, տարիների ընթացքում։",
+    "Ով հասկանում է իր ծախսերը, հասկանում է իր ազատության սահմանները։",
+    "Յուրաքանչյուր հմտություն, որին տիրապետում ես երիտասարդ տարիքում, դառնում է ողջ կյանքի ակտիվ։",
+    "Ամենամեծ մրցակիցը երեկվա քո ես-ն է, ոչ թե ուրիշները։",
+    "Աշխատիր ամեն օր մի փոքր ավելի, քան հարմարավետ ես, և տես, թե ինչպես է փոխվում քո կյանքը մեկ տարուց։"
+  ],
+  ru: [
+    "Дисциплина — это мост между целью и успехом.",
+    "Каждый день, когда ты держишься, ты на шаг ближе к тому человеку, каким хочешь стать.",
+    "Маленькие, стабильные шаги каждый день сильнее одного большого рывка.",
+    "Начать не трудно — трудно продолжать. Именно это тебя выделяет.",
+    "Не допускай нулевых дней: хотя бы один маленький шаг каждый день.",
+    "Твоё будущее строится привычками именно этой недели.",
+    "Богатые люди покупают то, что приносит доход, остальные — то, что только создаёт расходы.",
+    "От каждого дохода сначала отложи себе часть, а потом уже трать остальное.",
+    "Успех в деньгах в основном зависит от привычек и поведения, а не только от знаний.",
+    "То, во что ты твёрдо веришь и к чему стремишься, со временем становится достижимым.",
+    "Пойми, как на самом деле работают деньги и экономика, и перестанешь слепо от них зависеть.",
+    "Ленивая рука делает бедным, а трудолюбивая — обогащает.",
+    "Если хорошо управляешь малым, тебе доверят большее.",
+    "Каждая маленькая экономия сегодня со временем становится большой свободой.",
+    "Успех часто приходит к тем, кто работает, пока другие отдыхают.",
+    "Время — твой самый ценный ресурс: трать его так же бережно, как деньги.",
+    "Привычка, которой ты верен каждый день, важнее одного большого решения.",
+    "Комфорт часто — главный враг роста.",
+    "Кто учится управлять своими желаниями, учится управлять своим будущим.",
+    "Зарабатывать деньги — это навык, и, как любой навык, он развивается повторением.",
+    "Любая большая цель начинается как маленькая, незаметная привычка.",
+    "Не жди вдохновения — начни действовать, вдохновение придёт потом.",
+    "Дисциплинированный человек не спрашивает «хочу ли я сегодня», а просто делает.",
+    "Любой вклад сначала кажется маленьким — он растёт только со временем.",
+    "Избегание работы — временное облегчение, за которым следует большее давление.",
+    "Вместо зависти к чужому успеху учись тому, что они сделали иначе.",
+    "То, что не измеряешь, не можешь улучшить: следи за своим прогрессом.",
+    "Каждый навык, освоенный в молодости, годами будет приносить тебе доход.",
+    "Финансовая свобода начинается не с большой зарплаты, а с того, что расходы меньше доходов.",
+    "Не работай только ради денег: работай, чтобы построить навык и репутацию, деньги придут следом.",
+    "Каждый раз, выбирая дисциплину вместо лёгкости, ты укрепляешь свой характер.",
+    "Успешные люди делают то, чего избегают неудачники, даже когда трудно.",
+    "Иногда самый большой риск — ничего не делать.",
+    "Работай так, будто никто не смотрит, и успех проявится сам собой.",
+    "Деньги — инструмент, а не цель: спроси себя, для чего они тебе нужны.",
+    "Постоянство важнее интенсивности: медленное и стабильное побеждает быстрое и нестабильное.",
+    "Кто учится экономить малое, научится управлять большим, когда оно придёт.",
+    "Каждый день, когда ты не учишься чему-то новому, ты на день отстаёшь от своего будущего.",
+    "Большие мечты сбываются через маленькие повторяющиеся действия, а не через одно чудо.",
+    "Если не ценишь маленькие деньги, не сможешь управлять большими.",
+    "Самодисциплина — это свобода, а не ограничение: она освобождает тебя от будущих сожалений.",
+    "Каждое испытание, которое ты выдерживаешь, делает тебя сильнее для следующего.",
+    "Управление временем на самом деле — это управление самодисциплиной.",
+    "Прежде чем зарабатывать деньги, научись их ценить.",
+    "Успех — не единичное событие, а сумма ежедневных выборов.",
+    "Кто рано встаёт и работает, получает величайший дар времени — преимущество.",
+    "Каждый освоенный навык повышает твою ценность на рынке.",
+    "Лучшее вложение, которое ты можешь сделать, — это в себя: знания, здоровье и дисциплина.",
+    "Неудача — это не конец, а учебник, который учит следующему шагу.",
+    "Мышление богатства начинается с вопроса «как я могу», а не «почему я не могу».",
+    "Кто контролирует свои желания, контролирует свои финансы.",
+    "Трудовая этика — самая надёжная «секретная формула» успеха.",
+    "Каждый день, выбирая дисциплину, ты голосуешь за того человека, каким хочешь стать.",
+    "Накопление денег начинается не с большого дохода, а с маленькой стабильной привычки.",
+    "Чем раньше начнёшь вкладывать своё время и энергию, тем больше будет результат в долгосрочной перспективе.",
+    "Терпение — самый недооценённый навык финансового успеха.",
+    "Кто учится жить по средствам, тот освобождает себя для будущего.",
+    "Работай умно, но не избегай и много работать, особенно в начале.",
+    "Каждый великий предприниматель когда-то был новичком, который просто не сдался.",
+    "Финансовая грамотность — основа свободы, а не принуждение.",
+    "Кто копит без цели, легко тратит: определи, для чего ты копишь.",
+    "Каждый день выбор между лёгким и правильным формирует твоё будущее.",
+    "Успех любит тех, кто последователен даже в дни без мотивации.",
+    "Кто вкладывает время в обучение, никогда не проигрывает, даже если ошибается.",
+    "Работа, которая сначала кажется скучной, часто становится самым ценным навыком.",
+    "Богатство строится тихо, без показухи, годами.",
+    "Кто понимает свои расходы, понимает границы своей свободы.",
+    "Каждый навык, освоенный в молодости, становится активом на всю жизнь.",
+    "Твой главный соперник — это ты вчерашний, а не другие.",
+    "Работай каждый день чуть больше, чем комфортно, и увидишь, как изменится твоя жизнь через год."
+  ],
+  en: [
+    "Discipline is the bridge between goals and success.",
+    "Every day you hold on, you take one step closer to the person you want to become.",
+    "Small, steady steps every day beat one big effort.",
+    "Starting isn't hard — continuing is. That's what sets you apart.",
+    "Never have a zero day: at least one small step, every day.",
+    "Your future is built by this week's habits.",
+    "Rich people buy things that bring income; everyone else buys things that only create expenses.",
+    "From every income, set aside a part for yourself first, then spend the rest.",
+    "Financial success mostly depends on habits and behavior, not just knowledge.",
+    "What you firmly believe in and pursue eventually becomes attainable.",
+    "Understand how money and the economy really work, and you'll stop being blindly dependent on them.",
+    "A lazy hand brings poverty, but a diligent hand brings wealth.",
+    "If you manage little well, you'll be trusted with more.",
+    "Every small saving today becomes great freedom over time.",
+    "Success often goes to those who work while others rest.",
+    "Time is your most valuable resource — spend it as carefully as you'd spend money.",
+    "A habit you stay true to every day matters more than one big decision.",
+    "Comfort is often growth's biggest enemy.",
+    "Whoever learns to control their desires learns to control their future.",
+    "Earning money is a skill, and like any skill, it improves with repetition.",
+    "Every big goal starts as a small, unnoticed habit.",
+    "Don't wait for inspiration — start the work, inspiration will follow.",
+    "A disciplined person doesn't ask \"do I feel like it today\" — they just do it.",
+    "Every investment looks small at first; it only grows with time.",
+    "Avoiding work is temporary relief followed by greater pressure.",
+    "Instead of envying others' success, learn what they did differently.",
+    "What you don't measure, you can't improve — track your progress.",
+    "Every skill you learn young will bring you income for years.",
+    "Financial freedom starts not with a big salary but with keeping expenses below income.",
+    "Don't work only for money — work to build skill and reputation, the money will follow.",
+    "Every time you choose discipline over ease, you strengthen your character.",
+    "Successful people do what unsuccessful people avoid doing, even when it's hard.",
+    "Sometimes the biggest risk is doing nothing.",
+    "Work as if no one is watching, and success will show itself.",
+    "Money is a tool, not a goal — ask yourself what you actually want it for.",
+    "Consistency matters more than intensity — slow and steady beats fast and unstable.",
+    "Whoever learns to save from little will learn to manage a lot when it comes.",
+    "Every day you don't learn something new, you fall a day behind your future.",
+    "Big dreams come true through small, repeated actions, not a single miracle.",
+    "If you don't value small money, you won't be able to manage large money.",
+    "Self-discipline is freedom, not restriction — it frees you from future regret.",
+    "Every challenge you endure makes you stronger for the next one.",
+    "Time management is really self-discipline management.",
+    "Before earning money, learn to value it.",
+    "Success isn't a single event — it's the sum of daily choices.",
+    "Whoever wakes up early and works gets time's greatest gift: an advantage.",
+    "Every skill you master raises your value in the market.",
+    "The biggest investment you can make is in yourself — knowledge, health, and discipline.",
+    "Failure isn't an end, it's a textbook that teaches the next step.",
+    "A wealth mindset starts with \"how can I,\" not \"why can't I.\"",
+    "Whoever controls their desires controls their finances.",
+    "Work ethic is the most reliable \"secret formula\" for success.",
+    "Every day you choose discipline, you vote for the person you want to become.",
+    "Building wealth starts not with a big income but with a small, steady habit.",
+    "The sooner you start investing your time and energy, the greater the result over the long run.",
+    "Patience is the most underrated skill in financial success.",
+    "Whoever learns to live below their means frees themselves for the future.",
+    "Work smart, but don't shy away from working hard too, especially at the start.",
+    "Every great entrepreneur was once a beginner who simply didn't quit.",
+    "Financial literacy is the foundation of freedom, not an obligation.",
+    "Whoever saves without a purpose spends easily — define what you're saving for.",
+    "Every day's choice between easy and right shapes your future.",
+    "Success favors those who stay consistent even on days without motivation.",
+    "Whoever invests time in learning never loses, even when they make mistakes.",
+    "Work that seems boring at first often becomes the most valuable skill.",
+    "Wealth is built quietly, without showing off, over years.",
+    "Whoever understands their spending understands the limits of their freedom.",
+    "Every skill mastered young becomes a lifelong asset.",
+    "Your biggest competitor is yesterday's you, not others.",
+    "Work a little more than comfortable every day, and see how your life changes in a year."
+  ]
+};
+
+const I18N = {
+  hy: {
+    pageTitle: "Կարգապահության պլանավորիչ",
+    brand: "ԿԱՐԳԱՊԱՀՈՒԹՅԱՆ ՊԼԱՆԱՎՈՐԻՉ · V2",
+    weekStartLabel: "Շաբաթվա սկիզբ",
+    quoteNextBtn: "Հաջորդ միտքը →",
+    manageQuotesSummary: "Կառավարել մտքերը (ավելացնել/ջնջել սեփականները)",
+    newQuotePlaceholder: "Գրիր քո սեփական միտքը...",
+    addQuoteBtn: "+ Ավելացնել",
+    noCustomQuotes: "Դեռ սեփական միտք չկա։",
+    goalsHeader: "ՆՊԱՏԱԿՆԵՐ ՇԱԲԱԹՎԱ ՀԱՄԱՐ",
+    weeklyProgressHeader: "ՇԱԲԱԹԱԿԱՆ ԱՌԱՋԸՆԹԱՑ",
+    totalTasksLabel: "Ընդհանուր առաջադրանք",
+    doneLabel: "Կատարված",
+    remainingLabel: "Մնացած",
+    bestDayLabel: "Լավագույն օր",
+    worstDayLabel: "Ամենաթույլ օր",
+    avgLabel: "Միջին %",
+    streakLabel: "🔥 Շարք (օր)",
+    bestStreakLabel: "🏆 Ռեկորդ",
+    historyHeader: "ՆԱԽՈՐԴ ՇԱԲԱԹՆԵՐ",
+    reflectionHeader: "ՇԱԲԱԹՎԱ ԱՄՓՈՓՈՒՄ",
+    reflectionPlaceholder: "Կարճ հետևություն այս շաբաթվա մասին...",
+    dayNotePlaceholder: "Կարճ նշում այսօրվա մասին...",
+    dayRingLabel: "Կատարված օրվա",
+    energyLabel: "⚡ Էներգիա",
+    doneColon: "Կատարված՝",
+    remainingColon: "Մնացած՝",
+    footnote: "Տվյալները պահվում են ավտոմատ քո զննարկիչում այս սարքի համար"
+  },
+  ru: {
+    pageTitle: "Планировщик дисциплины",
+    brand: "ПЛАНИРОВЩИК ДИСЦИПЛИНЫ · V2",
+    weekStartLabel: "Начало недели",
+    quoteNextBtn: "Следующая мысль →",
+    manageQuotesSummary: "Управление цитатами (добавить/удалить свои)",
+    newQuotePlaceholder: "Напиши свою мысль...",
+    addQuoteBtn: "+ Добавить",
+    noCustomQuotes: "Пока нет своих мыслей.",
+    goalsHeader: "ЦЕЛИ НА НЕДЕЛЮ",
+    weeklyProgressHeader: "ПРОГРЕСС ЗА НЕДЕЛЮ",
+    totalTasksLabel: "Всего задач",
+    doneLabel: "Выполнено",
+    remainingLabel: "Осталось",
+    bestDayLabel: "Лучший день",
+    worstDayLabel: "Слабый день",
+    avgLabel: "Средний %",
+    streakLabel: "🔥 Серия (дни)",
+    bestStreakLabel: "🏆 Рекорд",
+    historyHeader: "ПРОШЛЫЕ НЕДЕЛИ",
+    reflectionHeader: "ИТОГИ НЕДЕЛИ",
+    reflectionPlaceholder: "Короткий вывод об этой неделе...",
+    dayNotePlaceholder: "Короткая заметка о дне...",
+    dayRingLabel: "Выполнено за день",
+    energyLabel: "⚡ Энергия",
+    doneColon: "Выполнено:",
+    remainingColon: "Осталось:",
+    footnote: "Данные сохраняются автоматически в браузере на этом устройстве"
+  },
+  en: {
+    pageTitle: "Discipline Planner",
+    brand: "DISCIPLINE PLANNER · V2",
+    weekStartLabel: "Week start",
+    quoteNextBtn: "Next thought →",
+    manageQuotesSummary: "Manage quotes (add/delete your own)",
+    newQuotePlaceholder: "Write your own thought...",
+    addQuoteBtn: "+ Add",
+    noCustomQuotes: "No custom quotes yet.",
+    goalsHeader: "GOALS FOR THE WEEK",
+    weeklyProgressHeader: "WEEKLY PROGRESS",
+    totalTasksLabel: "Total tasks",
+    doneLabel: "Done",
+    remainingLabel: "Remaining",
+    bestDayLabel: "Best day",
+    worstDayLabel: "Weakest day",
+    avgLabel: "Average %",
+    streakLabel: "🔥 Streak (days)",
+    bestStreakLabel: "🏆 Best",
+    historyHeader: "PAST WEEKS",
+    reflectionHeader: "WEEKLY SUMMARY",
+    reflectionPlaceholder: "Short takeaway from this week...",
+    dayNotePlaceholder: "Short note about today...",
+    dayRingLabel: "Done for the day",
+    energyLabel: "⚡ Energy",
+    doneColon: "Done:",
+    remainingColon: "Left:",
+    footnote: "Data is saved automatically in your browser on this device"
+  }
+};
+
+function t(key){ return I18N[state.lang][key]; }
 
 let state = {
   weekStart: null,
-  goals: [],
-  tasksList: [],
+  lang: 'hy',
+  goals: Array(GOALS.hy.length).fill(false),
   quoteIndex: 0,
-  days: DAY_NAMES.map(()=>({ tasks: [], energy: 3, note: '' }))
+  myQuotes: [],
+  bestStreak: 0,
+  weekHistory: [],
+  weeklyReflection: '',
+  days: DAY_NAMES.hy.map(()=>({
+    tasks: Array(TASKS.hy.length).fill(false),
+    energy: 3,
+    note: ''
+  }))
 };
 
-const STORAGE_KEY = 'discipline-planner-ru-state';
+const STORAGE_KEY = 'discipline-planner-state';
 
 function mondayOf(d){
   const day = d.getDay();
@@ -242,57 +631,58 @@ function mondayOf(d){
 
 async function loadState(){
   try{
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if(saved){
-      const parsed = JSON.parse(saved);
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
       state = Object.assign(state, parsed);
+      if(!state.days || state.days.length !== 7){
+        state.days = DAY_NAMES.hy.map(()=>({tasks:Array(TASKS.hy.length).fill(false), energy:3, note:''}));
+      }else{
+        state.days.forEach(d=>{
+          if(!Array.isArray(d.tasks)) d.tasks = [];
+          while(d.tasks.length < TASKS.hy.length) d.tasks.push(false);
+          d.tasks.length = TASKS.hy.length;
+          if(typeof d.note !== 'string') d.note = '';
+        });
+      }
+      if(!Array.isArray(state.goals) || state.goals.length !== GOALS.hy.length){
+        const old = Array.isArray(state.goals) ? state.goals : [];
+        state.goals = GOALS.hy.map((_,i)=> !!old[i]);
+      }
+      if(!Array.isArray(state.myQuotes)) state.myQuotes = [];
+      if(typeof state.bestStreak !== 'number') state.bestStreak = 0;
+      if(!Array.isArray(state.weekHistory)) state.weekHistory = [];
+      if(typeof state.weeklyReflection !== 'string') state.weeklyReflection = '';
+      if(!['hy','ru','en'].includes(state.lang)) state.lang = 'hy';
     }
-  }catch(e){}
-
-  if(!state.tasksList || state.tasksList.length === 0){
-    state.tasksList = [...DEFAULT_TASKS];
-  }
-  if(!state.goals || state.goals.length === 0){
-    state.goals = DEFAULT_GOALS.map(text => ({ text, done: false }));
-  }
-
-  if(!state.days || state.days.length !== 7){
-    state.days = DAY_NAMES.map(()=>({
-      tasks: Array(state.tasksList.length).fill(false),
-      energy: 3,
-      note: ''
-    }));
-  } else {
-    state.days.forEach(d => {
-      if(!Array.isArray(d.tasks)) d.tasks = [];
-      while(d.tasks.length < state.tasksList.length) d.tasks.push(false);
-      d.tasks.length = state.tasksList.length;
-    });
-  }
-
+  }catch(e){ /* no saved state yet */ }
   const currentMonday = mondayOf(new Date());
   if(!state.weekStart){
     state.weekStart = currentMonday;
-  } else if(state.weekStart < currentMonday){
+  }else if(state.weekStart < currentMonday){
+    // A new calendar week has started — archive the finished week, then reset.
+    let totalDone = 0, totalPossible = 0;
+    state.days.forEach(d => { totalDone += d.tasks.filter(Boolean).length; totalPossible += d.tasks.length; });
+    const finishedPct = totalPossible > 0 ? (totalDone/totalPossible*100) : 0;
+    state.weekHistory.push({ weekStart: state.weekStart, pct: Math.round(finishedPct) });
+    if(state.weekHistory.length > 6) state.weekHistory = state.weekHistory.slice(-6);
+
     state.weekStart = currentMonday;
-    state.goals.forEach(g => g.done = false);
-    state.days = DAY_NAMES.map(()=>({
-      tasks: Array(state.tasksList.length).fill(false),
-      energy: 3,
-      note: ''
-    }));
-    saveState();
+    state.goals = Array(GOALS.hy.length).fill(false);
+    state.days = DAY_NAMES.hy.map(()=>({tasks:Array(TASKS.hy.length).fill(false), energy:3, note:''}));
+    state.weeklyReflection = '';
+    await saveState();
   }
   document.getElementById('weekStart').value = state.weekStart;
 }
 
-function saveState(){
+async function saveState(){
   try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }catch(e){}
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+  }catch(e){ console.error('storage error', e); }
 }
 
-function ringSVG(pct, size, stroke, color){
+function ringSVG(pct, size, stroke, color, id){
   const r = (size - stroke)/2;
   const c = 2*Math.PI*r;
   const off = c * (1 - pct/100);
@@ -309,18 +699,18 @@ function dateForDayIndex(i){
   if(!state.weekStart) return '';
   const d = new Date(state.weekStart + 'T00:00:00');
   d.setDate(d.getDate()+i);
-  return d.toLocaleDateString('ru-RU', {day:'2-digit', month:'short'});
+  return d.toLocaleDateString(LOCALE[state.lang], {day:'2-digit', month:'short'});
 }
 
 function computeDayPct(dayIdx){
   const arr = state.days[dayIdx].tasks;
   const done = arr.filter(Boolean).length;
-  return { done, total: arr.length, pct: arr.length > 0 ? (done/arr.length)*100 : 0 };
+  return { done, total: arr.length, pct: (done/arr.length)*100 };
 }
 
 function computeStreak(){
   let streak = 0;
-  for(let i=0; i<state.days.length; i++){
+  for(let i=0;i<state.days.length;i++){
     const done = state.days[i].tasks.filter(Boolean).length;
     if(done > 0) streak++;
     else break;
@@ -329,46 +719,84 @@ function computeStreak(){
 }
 
 function computeGoalsPct(){
-  const done = state.goals.filter(g => g.done).length;
-  return { done, total: state.goals.length, pct: state.goals.length > 0 ? (done/state.goals.length)*100 : 0 };
+  const done = state.goals.filter(Boolean).length;
+  return { done, total: GOALS.hy.length, pct: (done/GOALS.hy.length)*100 };
 }
 
 function render(){
-  document.getElementById('quoteText').textContent = QUOTES[state.quoteIndex % QUOTES.length];
+  const lang = state.lang;
+  const tasksArr = TASKS[lang];
+  const goalsArr = GOALS[lang];
+  const dayNamesArr = DAY_NAMES[lang];
+  const dayShortArr = DAY_SHORT[lang];
 
-  // Goals
-  const goalsList = document.getElementById('goalsList');
-  goalsList.innerHTML = state.goals.map((g,i)=>`
-    <div class="goal-item">
-      <div class="goal-left">
-        <input type="checkbox" data-goal="${i}" ${g.done ? 'checked':''}>
-        <span>${g.text}</span>
-      </div>
-      <button class="del-btn" data-del-goal="${i}" title="Удалить">✕</button>
+  // Static text / labels
+  document.getElementById('pageTitle').textContent = t('pageTitle');
+  document.documentElement.lang = lang;
+  document.getElementById('brandText').textContent = t('brand');
+  document.getElementById('weekStartLabel').textContent = t('weekStartLabel');
+  document.getElementById('nextQuoteBtn').textContent = t('quoteNextBtn');
+  document.getElementById('manageQuotesSummary').textContent = t('manageQuotesSummary');
+  document.getElementById('newQuoteInput').placeholder = t('newQuotePlaceholder');
+  document.getElementById('addQuoteBtn').textContent = t('addQuoteBtn');
+  document.getElementById('goalsHeader').textContent = t('goalsHeader');
+  document.getElementById('weeklyProgressHeader').textContent = t('weeklyProgressHeader');
+  document.getElementById('bestDayLabel').textContent = t('bestDayLabel');
+  document.getElementById('worstDayLabel').textContent = t('worstDayLabel');
+  document.getElementById('avgLabel').textContent = t('avgLabel');
+  document.getElementById('streakLabel').textContent = t('streakLabel');
+  document.getElementById('bestStreakLabel').textContent = t('bestStreakLabel');
+  document.getElementById('historyHeader').textContent = t('historyHeader');
+  document.getElementById('reflectionHeader').textContent = t('reflectionHeader');
+  document.getElementById('weeklyReflection').placeholder = t('reflectionPlaceholder');
+  document.getElementById('footnoteText').textContent = t('footnote');
+
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  // Motivational quote (browsable via the "next" button, persisted)
+  if(!Array.isArray(state.myQuotes)) state.myQuotes = [];
+  const allQuotes = QUOTES[lang].concat(state.myQuotes);
+  if(typeof state.quoteIndex !== 'number') state.quoteIndex = 0;
+  document.getElementById('quoteText').textContent = allQuotes[state.quoteIndex % allQuotes.length];
+
+  document.getElementById('myQuotesList').innerHTML = state.myQuotes.length ? state.myQuotes.map((q,i)=>`
+    <div style="display:flex; align-items:flex-start; gap:8px; font-size:11.5px; color:var(--ink-dim); border-bottom:1px solid var(--line); padding-bottom:6px;">
+      <span style="flex:1;">${q}</span>
+      <button data-del-quote="${i}" style="background:transparent; border:none; color:#d17a72; cursor:pointer; font-size:13px; flex-shrink:0;">✕</button>
     </div>
+  `).join('') : `<div style="font-size:11px; color:var(--ink-dim);">${t('noCustomQuotes')}</div>`;
+
+  // Goals card
+  const goalsList = document.getElementById('goalsList');
+  goalsList.innerHTML = goalsArr.map((g,i)=>`
+    <label class="goal-item">
+      <input type="checkbox" data-goal="${i}" ${state.goals[i] ? 'checked':''}>
+      <span>${g}</span>
+    </label>
   `).join('');
-  
   const gStat = computeGoalsPct();
   document.getElementById('goalsRingHolder').innerHTML = ringSVG(gStat.pct, 84, 8, '#c9a24a');
   document.getElementById('goalsRingLabel').textContent = `${gStat.done} / ${gStat.total}`;
 
+  // Goal stat strip: total tasks done this week across all days
   let totalDone = 0, totalPossible = 0;
   state.days.forEach(d => { totalDone += d.tasks.filter(Boolean).length; totalPossible += d.tasks.length; });
-  
   document.getElementById('goalStatStrip').innerHTML = `
-    <div class="stat"><div class="n">${totalPossible}</div><div class="l">Всего задач</div></div>
-    <div class="stat best"><div class="n">${totalDone}</div><div class="l">Выполнено</div></div>
-    <div class="stat worst"><div class="n">${totalPossible-totalDone}</div><div class="l">Осталось</div></div>
+    <div class="stat"><div class="n">${totalPossible}</div><div class="l">${t('totalTasksLabel')}</div></div>
+    <div class="stat best"><div class="n">${totalDone}</div><div class="l">${t('doneLabel')}</div></div>
+    <div class="stat worst"><div class="n">${totalPossible-totalDone}</div><div class="l">${t('remainingLabel')}</div></div>
   `;
 
-  // Bars
+  // Bars + week ring
   const dayStats = state.days.map((d,i)=>computeDayPct(i));
   const barsHolder = document.getElementById('barsHolder');
   barsHolder.innerHTML = dayStats.map((s,i)=>{
-    const h = s.total > 0 ? Math.max(4, (s.done/s.total) * 76) : 4;
+    const h = Math.max(4, (s.done/ (tasksArr.length)) * 76);
     return `<div class="bar-col">
       <div class="bar ${s.done>0?'filled':''}" style="height:${h}px"></div>
-      <div class="bar-lbl">${DAY_SHORT[i]}</div>
+      <div class="bar-lbl">${dayShortArr[i]}</div>
     </div>`;
   }).join('');
 
@@ -381,27 +809,25 @@ function render(){
     if(s.pct > dayStats[bestIdx].pct) bestIdx = i;
     if(s.pct < dayStats[worstIdx].pct) worstIdx = i;
   });
-  document.getElementById('bestDayName').textContent = totalDone>0 ? DAY_SHORT[bestIdx] : '—';
-  document.getElementById('worstDayName').textContent = totalDone>0 ? DAY_SHORT[worstIdx] : '—';
+  document.getElementById('bestDayName').textContent = totalDone>0 ? dayShortArr[bestIdx] : '—';
+  document.getElementById('worstDayName').textContent = totalDone>0 ? dayShortArr[worstIdx] : '—';
   document.getElementById('avgPct').textContent = `${Math.round(weekPct)}%`;
-  document.getElementById('streakNum').textContent = computeStreak();
+  const curStreak = computeStreak();
+  if(curStreak > state.bestStreak){ state.bestStreak = curStreak; saveState(); }
+  document.getElementById('streakNum').textContent = curStreak;
+  document.getElementById('bestStreakNum').textContent = state.bestStreak;
 
-  // Week Grid
+  // Week grid
   const grid = document.getElementById('weekGrid');
-  grid.innerHTML = DAY_NAMES.map((name,i)=>{
+  grid.innerHTML = dayNamesArr.map((name,i)=>{
     const stat = dayStats[i];
-    const tasksHtml = state.tasksList.map((t,ti)=>`
-      <div class="task">
-        <div class="task-left">
-          <input type="checkbox" data-day="${i}" data-task="${ti}" ${state.days[i].tasks[ti] ? 'checked':''}>
-          <span>${t}</span>
-        </div>
-        <button class="del-btn" data-del-task-template="${ti}" title="Удалить из всех дней">✕</button>
-      </div>
+    const tasksHtml = tasksArr.map((tsk,ti)=>`
+      <label class="task">
+        <input type="checkbox" data-day="${i}" data-task="${ti}" ${state.days[i].tasks[ti] ? 'checked':''}>
+        <span>${tsk}</span>
+      </label>
     `).join('');
-    
     const energyDots = [1,2,3,4,5].map(v=>`<div class="dot ${state.days[i].energy>=v?'on':''}" data-day="${i}" data-energy="${v}"></div>`).join('');
-    
     return `
       <div class="day-card">
         <div class="day-head">
@@ -409,22 +835,45 @@ function render(){
           <div class="day-date">${dateForDayIndex(i)}</div>
         </div>
         <div class="task-list">${tasksHtml}</div>
-        <div class="add-form" style="margin-top:4px;">
-          <input type="text" id="newTaskInput_${i}" placeholder="Новая задача..." style="font-size:10.5px; padding:4px 6px;">
-          <button data-add-task-day="${i}" style="font-size:10.5px; padding:4px 8px;">+</button>
-        </div>
-        <div class="day-counts"><span>Вып: <b>${stat.done}</b></span><span>Осталось: <b>${stat.total-stat.done}</b></span></div>
-        <textarea class="day-note" data-note="${i}" placeholder="Заметка за день...">${state.days[i].note || ''}</textarea>
+        <div class="day-counts"><span>${t('doneColon')} <b>${stat.done}</b></span><span>${t('remainingColon')} <b>${stat.total-stat.done}</b></span></div>
+        <textarea class="day-note" data-note="${i}" placeholder="${t('dayNotePlaceholder')}">${state.days[i].note || ''}</textarea>
         <div class="mini-tracker">
-          <div class="mini-row"><span class="lbl">⚡ Энергия</span><div class="dots">${energyDots}</div></div>
+          <div class="mini-row"><span class="lbl">${t('energyLabel')}</span><div class="dots">${energyDots}</div></div>
         </div>
         <div class="day-ring-wrap">
           ${ringSVG(stat.pct, 60, 6, stat.pct===100 ? '#7fbf8a' : '#c9a24a')}
-          <div class="day-ring-lbl">Прогресс дня</div>
+          <div class="day-ring-lbl">${t('dayRingLabel')}</div>
         </div>
       </div>
     `;
   }).join('');
+
+  // History sparkline (past weeks)
+  const historyCard = document.getElementById('historyCard');
+  const reflectionCard = historyCard.parentElement.children[1];
+  if(state.weekHistory && state.weekHistory.length){
+    historyCard.style.display = '';
+    reflectionCard.style.gridColumn = '';
+    const maxPct = Math.max(1, ...state.weekHistory.map(w=>w.pct));
+    document.getElementById('historyBars').innerHTML = state.weekHistory.map(w=>{
+      const h = Math.max(4, (w.pct/maxPct) * 46);
+      const d = new Date(w.weekStart + 'T00:00:00');
+      const lbl = d.toLocaleDateString(LOCALE[state.lang], {day:'2-digit', month:'short'});
+      return `<div class="bar-col">
+        <div class="bar filled" style="height:${h}px" title="${w.pct}%"></div>
+        <div class="bar-lbl">${lbl}</div>
+      </div>`;
+    }).join('');
+  }else{
+    historyCard.style.display = 'none';
+    reflectionCard.style.gridColumn = '1 / -1';
+  }
+
+  // Weekly reflection
+  const reflectionEl = document.getElementById('weeklyReflection');
+  if(document.activeElement !== reflectionEl){
+    reflectionEl.value = state.weeklyReflection || '';
+  }
 
   attachHandlers();
 }
@@ -432,50 +881,17 @@ function render(){
 function attachHandlers(){
   document.querySelectorAll('[data-goal]').forEach(el=>{
     el.onchange = () => {
-      state.goals[+el.dataset.goal].done = el.checked;
+      state.goals[+el.dataset.goal] = el.checked;
       saveState(); render();
     };
   });
-
-  document.querySelectorAll('[data-del-goal]').forEach(el=>{
-    el.onclick = () => {
-      state.goals.splice(+el.dataset.delGoal, 1);
-      saveState(); render();
-    };
-  });
-
   document.querySelectorAll('[data-day][data-task]').forEach(el=>{
     el.onchange = () => {
-      const d = +el.dataset.day, t = +el.dataset.task;
-      state.days[d].tasks[t] = el.checked;
+      const d = +el.dataset.day, tsk = +el.dataset.task;
+      state.days[d].tasks[tsk] = el.checked;
       saveState(); render();
     };
   });
-
-  document.querySelectorAll('[data-del-task-template]').forEach(el=>{
-    el.onclick = () => {
-      const idx = +el.dataset.delTaskTemplate;
-      state.tasksList.splice(idx, 1);
-      state.days.forEach(d => d.tasks.splice(idx, 1));
-      saveState(); render();
-    };
-  });
-
-  document.querySelectorAll('[data-add-task-day]').forEach(btn=>{
-    btn.onclick = () => {
-      const dayIdx = +btn.dataset.addTaskDay;
-      const input = document.getElementById(`newTaskInput_${dayIdx}`);
-      const val = input.value.trim();
-      if(val){
-        state.tasksList.push(val);
-        state.days.forEach((d, idx) => {
-          d.tasks.push(idx === dayIdx);
-        });
-        saveState(); render();
-      }
-    };
-  });
-
   document.querySelectorAll('.dot[data-energy]').forEach(el=>{
     el.onclick = () => {
       const d = +el.dataset.day, v = +el.dataset.energy;
@@ -483,37 +899,53 @@ function attachHandlers(){
       saveState(); render();
     };
   });
-
   document.querySelectorAll('.day-note').forEach(el=>{
     el.onchange = () => {
       state.days[+el.dataset.note].note = el.value;
       saveState();
     };
   });
-
   document.getElementById('nextQuoteBtn').onclick = () => {
-    state.quoteIndex++;
+    const total = QUOTES[state.lang].length + (state.myQuotes ? state.myQuotes.length : 0);
+    state.quoteIndex = (state.quoteIndex + 1) % total;
     saveState(); render();
   };
-
-  document.getElementById('addGoalBtn').onclick = () => {
-    const input = document.getElementById('newGoalInput');
+  document.getElementById('addQuoteBtn').onclick = () => {
+    const input = document.getElementById('newQuoteInput');
     const val = input.value.trim();
     if(val){
-      state.goals.push({ text: val, done: false });
-      input.value = '';
+      state.myQuotes.push(val);
       saveState(); render();
     }
   };
-
+  document.getElementById('newQuoteInput').onkeydown = (e) => {
+    if(e.key === 'Enter'){ document.getElementById('addQuoteBtn').click(); }
+  };
+  document.querySelectorAll('[data-del-quote]').forEach(el=>{
+    el.onclick = () => {
+      state.myQuotes.splice(+el.dataset.delQuote, 1);
+      if(state.quoteIndex >= QUOTES[state.lang].length + state.myQuotes.length) state.quoteIndex = 0;
+      saveState(); render();
+    };
+  });
   document.getElementById('weekStart').onchange = (e) => {
     state.weekStart = e.target.value;
     saveState(); render();
   };
+  document.getElementById('weeklyReflection').onchange = (e) => {
+    state.weeklyReflection = e.target.value;
+    saveState();
+  };
+  document.querySelectorAll('.lang-btn').forEach(el=>{
+    el.onclick = () => {
+      state.lang = el.dataset.lang;
+      saveState(); render();
+    };
+  });
 }
 
 (async function init(){
-  loadState();
+  await loadState();
   render();
 })();
 </script>
